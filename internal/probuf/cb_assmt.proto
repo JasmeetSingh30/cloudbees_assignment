@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package railwayTicketing;
+
+option go_package = "./probuf_generated";
+
+import "google/protobuf/empty.proto";
+
+message User {
+    string first_name = 1;
+    string last_name = 2;
+    string email = 3;
+}
+
+message TicketCreateRequest {
+    User user = 1;
+    string from = 2;
+    string to = 3;
+}
+
+message Receipt {
+    User user = 1;
+    string from = 2;
+    string to = 3;
+    int32 ticketId = 4;
+    string section = 5;
+    int32 seatNo = 6;
+    float price = 7;
+}
+
+message Seat {
+    User user = 1;
+    int32 seatNo = 2;
+}
+
+message Section {
+    string section_name = 1;
+    repeated Seat seats = 2;
+}
+
+message SeatModificationRequest {
+    enum SectionEnum {
+        SECTION_A = 0;
+        SECTION_B = 1;
+    }
+    User user = 1;
+    int32 ticketId = 2;
+    SectionEnum section = 3;
+    int32 seat = 4;
+}
+
+message TicketRequest {
+    User user = 1;
+    int32 ticketId = 2;
+}
+
+message TrainSectionAllocated{
+    string from = 1;
+    string to = 2;
+    SeatModificationRequest.SectionEnum Section =3;
+}
+
+service RailwayService {
+    rpc BuyTicket (TicketCreateRequest) returns (Receipt);
+    rpc ViewReceipt (TicketRequest) returns (Receipt);
+    rpc ViewAllocatedSeats (TrainSectionAllocated) returns (Section);
+    rpc CancelTicket (TicketRequest) returns (google.protobuf.Empty);
+    rpc ModifySeat (SeatModificationRequest) returns (Receipt);
+}
